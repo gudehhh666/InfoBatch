@@ -90,6 +90,11 @@ else:
     net = ResNet50(num_classes=100)
 
 net = net.to(device)
+net_dir = 'checkpoint/'
+if not os.path.exists(net_dir):
+    os.makedirs(net_dir)
+
+
 criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing, reduction='none')
 test_criterion = nn.CrossEntropyLoss()
 
@@ -174,6 +179,8 @@ for epoch in range(args.num_epoch):
     train(epoch)
     total_time+=time.time()-end
     test(epoch)
+    if epoch % 20 == 0:
+            torch.save(net.state_dict(), os.path.join(net_dir, f'model_{epoch}.pth'))
 
 
 print('Total saved sample forwarding: ', trainset.total_save())
